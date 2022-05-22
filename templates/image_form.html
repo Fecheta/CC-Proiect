@@ -27,10 +27,25 @@
 
                         <div style="display: flex; flex-direction: column; justify-content:space-between;">
 
-                            <select name="source" id="file-source">
-                                <option value="file"> From File </option>
-                                <option value="url"> From URL </option>
-                            </select>
+                            <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-around;">
+
+                                <select name="source" id="file-source" style="width:50%" required>
+                                    <option value=""> -- Select Source -- </option>
+                                    <option value="file"> From File </option>
+                                    <option value="url"> From URL </option>
+                                </select>
+
+                                <select name="lang" id="lang" style="width:50%" required>
+                                    <option value=""> -- Select Language -- </option>
+                                    <option value="en"> English </option>
+                                    <option value="fr"> French </option>
+                                    <option value="es"> Spanish </option>
+                                    <option value="de"> German </option>
+                                    <option value="it"> Italian </option>
+                                    <option value="ja"> Japanese </option>
+                                </select>
+
+                            </div>
 
                             <input type="file" accept=".png, .jpeg, .jpg, .gif" name="photos-files" multiple class="form-control" id="file-inp" style="margin-right: 1em; margin: 1em 0 1em 0">
 

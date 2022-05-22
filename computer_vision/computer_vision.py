@@ -49,10 +49,10 @@ class ComputerVision:
 
         return texts
 
-    def identify_text_from_local_file_str(self, image_str):
+    def identify_text_from_local_file_str(self, image_str, language):
         response = self.cv_client.read_in_stream(
                 image_str,
-                Language='en',
+                Language=language,
                 raw=True
             )
 
@@ -99,10 +99,10 @@ class ComputerVision:
 
         return texts, url
 
-    def identify_text_from_url(self, image_url):
+    def identify_text_from_url(self, image_url, language):
         response = self.cv_client.read(
                 image_url,
-                Language='en',
+                Language=language,
                 raw=True
             )
 

@@ -87,13 +87,14 @@ def hand_to_text():
         computer_vision = ComputerVision()
 
         method = request.form['source']
+        language = request.form['lang']
         # print("Method: " + str(method))
 
         if method == 'file':
             file_to_analyze = request.files.getlist('photos-files')[0]
             print(file_to_analyze.filename)
 
-            texts, url = computer_vision.identify_text_from_local_file_str(file_to_analyze)
+            texts, url = computer_vision.identify_text_from_local_file_str(file_to_analyze, language)
 
             return render_template('image_text.html', image=url, texts=texts)
 
@@ -102,7 +103,7 @@ def hand_to_text():
             # print(file_to_analyze.filename)
             print(photo_url)
 
-            texts, url = computer_vision.identify_text_from_url(photo_url)
+            texts, url = computer_vision.identify_text_from_url(photo_url, language)
 
             return render_template('image_text.html', image=url, texts=texts)
 
@@ -133,12 +134,12 @@ def text_to_speech_page():
 def search_page():
     return render_template('search.html')
 
+
 @app.route('/db')
 def db():
     query = Query()
     result = query.return_all()
     return render_template('db.html', result=result)
-
 
 
 if __name__ == '__main__':
