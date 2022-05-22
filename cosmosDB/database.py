@@ -5,7 +5,7 @@ class DBConnection(object):
 
     def __init__(self, type):
         self.endpoint = "https://cloudproiect.documents.azure.com:443/"
-        self.key = 'uKKz1Ik9lEBtWOMqvSnbwxXfEDQOj5zJjQA4Ynl6w1hiV8jjx7Hzn613lKQsNhL8GlEBVaqLUHKhUqOYVLa3BQ=='
+        self.key = 'uKKz1Ik9lEBtWOMqvSnbwxXfEDQOj5zJjQA4Ynl6w1hi'+'V8jjx7Hzn613lKQsNhL8GlEBVaqLUHKhUqOYVLa3BQ=='
         self.client = CosmosClient(self.endpoint, self.key)
         if type== "Users":
             self.database_name = 'Users'
