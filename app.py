@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 
 from FormRecognizer import FormRecognizer
+from database.query import Query
 from storage import Storage
 from computer_vision import ComputerVision
 from TextAnalytics import TextAnalytics
@@ -131,6 +132,13 @@ def text_to_speech_page():
 @app.route('/search')
 def search_page():
     return render_template('search.html')
+
+@app.route('/db')
+def db():
+    query = Query()
+    result = query.return_all()
+    return render_template('db.html', result=result)
+
 
 
 if __name__ == '__main__':
