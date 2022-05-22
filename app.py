@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 
 from FormRecognizer import FormRecognizer
+from cosmosDB.database import DBConnection
 from database.query import Query
 from storage import Storage
 from computer_vision import ComputerVision
@@ -135,8 +136,8 @@ def search_page():
 
 @app.route('/db')
 def db():
-    query = Query()
-    result = query.return_all()
+    db = DBConnection("Users")  # connect to Users / Documents database with this param
+    result = db.select_user("12")
     return render_template('db.html', result=result)
 
 
