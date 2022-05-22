@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Photos</title>
+    <style>
+        .main-area{
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border: 1px solid black;
+            width: 45%;
+            padding: 2em 2em;
+        }
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+         h2 {
+            padding: 0px;
+            margin: 0px;
+        }
+    </style>
+</head>
+<body>
+
+<h1> <b>IMAGES</b> </h1>
+<div class="main-area">
+    <img src="{{ image }}" style="margin: 1em 0; width: 100%;"/>
+</div>
+{% for i in texts %}
+    <h2> {{ i }} </h2>
+{% endfor %}
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	</head>
+
+	<body>
+
+        <form class="grid" action="/formRecognizer/result" method="POST">
+
+          {% if description %}
+            {% for message in description %}
+                <h2 class="c">{{ message }}</h2>
+            {% endfor %}
+          {% endif %}
+
+          <label for="description">Form link:</label>
+          <input type="text" id="description" name="description">
+
+          <center><input class="file_submit" type="Submit"></center>
+
+        </form>
+
+
+
+
+
+
+        <br>
+        <br>
+        <br>
+
+
+    </body>
+
+</html>

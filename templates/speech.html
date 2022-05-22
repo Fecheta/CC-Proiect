@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech</title>
+</head>
+<body>
+<form class="p-3 mx-auto form-group" action="/texttospeech" method="POST">
+     <div class="form-group">
+        {{form.text.label(class="form-control-label", for="text")}}
+        {{ form.text(placeholder="Enter text:" ,class="form-control", id="text") }}
+    </div>
+    <br>
+
+    {{form.submit()}}
+</form>
+</body>
+</html>
