@@ -3,6 +3,7 @@ from wtforms import StringField, RadioField, SelectField, TextAreaField, DateTim
 from wtforms.validators import DataRequired
 from flask_wtf import FlaskForm
 
+
 def text_to_speach(message):
     speech_config = speechsdk.SpeechConfig(subscription="57bb276f27cb46d09c3e6b7256bf86fe", region="westeurope")
     audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
@@ -33,5 +34,3 @@ class Widgets(FlaskForm):
     text = StringField(label="Text", validators=[DataRequired()])
 
     submit = SubmitField(label="Submit")
-
-
