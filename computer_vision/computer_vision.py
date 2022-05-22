@@ -1,6 +1,7 @@
 import os
 import io
 import time
+from urllib.parse import *
 
 from msrest.authentication import CognitiveServicesCredentials
 from azure.cognitiveservices.vision.computervision import ComputerVisionClient
@@ -79,15 +80,24 @@ class ComputerVision:
                     x1, y1, x2, y2, x3, y3, x4, y4 = line.bounding_box
                     draw = ImageDraw.Draw(image)
                     draw.line(
-                        ((x1, y1), (x2, y2), (x3, y3), (x4, y4), (x1, y1)),
+                        ((x1, y1), (x2, y1), (x2, y2), (x3, y2), (x3, y3), (x4, y3), (x4, y4), (x1, y4), (x1, y1)),
                         fill=(128, 0, 0),
-                        width=2
+                        width=3
                     )
 
         # image.show()
-        image.save('test.jpg')
+        # image.save('test.jpg')
 
-        return texts
+        image_stream = io.BytesIO()
+        image.save(image_stream, format='PNG')
+        image_stream.seek(0)
+
+        storage = Storage.storage('images-analyzed')
+        storage.upload_file_stream(image_stream, image_str.filename)
+
+        url = storage.get_image_by_name(image_str.filename)
+
+        return texts, url
 
     def identify_text_from_url(self, image_url):
         response = self.cv_client.read(
@@ -120,19 +130,22 @@ class ComputerVision:
                     x1, y1, x2, y2, x3, y3, x4, y4 = line.bounding_box
                     draw = ImageDraw.Draw(image)
                     draw.line(
-                        ((x1, y1), (x2, y2), (x3, y3), (x4, y4), (x1, y1)),
+                        ((x1, y1), (x2, y1), (x2, y2), (x3, y2), (x3, y3), (x4, y3), (x4, y4), (x1, y4), (x1, y1)),
                         fill=(128, 0, 0),
-                        width=5
+                        width=3
                     )
 
         image_stream = io.BytesIO()
         image.save(image_stream, format='PNG')
         image_stream.seek(0)
 
-        storage = Storage.storage('images')
-        storage.upload_file_stream(image_stream)
+        storage = Storage.storage('images-analyzed')
+        name = urlparse(image_url).path.split('/')[-1]
+        storage.upload_file_stream(image_stream, name)
 
-        return texts
+        url = storage.get_image_by_name(name)
+
+        return texts, url
 
 
 # if __name__ == '__main__':

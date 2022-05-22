@@ -51,8 +51,18 @@
 <script>
         var urlInp = document.getElementById('url-inp');
         var fileInp = document.getElementById('file-inp');
+        var selection = document.getElementById('file-source');
 
-        document.getElementById('file-source').onchange = function() {
+        if (selection.value === 'file'){
+                fileInp.style.display = 'block';
+                urlInp.style.display = 'none';
+            }
+        if (selection.value === 'url'){
+                fileInp.style.display = 'none';
+                urlInp.style.display = 'block';
+            }
+
+        selection.onchange = function() {
             if (this.value === 'file'){
                 fileInp.style.display = 'block';
                 urlInp.style.display = 'none';

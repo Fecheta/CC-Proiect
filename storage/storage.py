@@ -42,12 +42,15 @@ class Storage:
         except Exception as e:
             print("Ignoring duplicate filenames")
 
-    def upload_file_stream(self, stream: io.BytesIO):
+    def upload_file_stream(self, stream: io.BytesIO, name):
         try:
-            self.container_client.upload_blob(stream.read(),
-                                              blob_type='BlockBlob')
+            blob_client = self.container_client.get_blob_client(blob=name)
+
+            blob_client.upload_blob(stream.read(),
+                                    blob_type='BlockBlob')
+            print(stream)
         except Exception as e:
-            print(e)
+            # print(e)
             print("Ignoring duplicate filenames")
 
     def get_images(self):

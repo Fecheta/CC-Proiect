@@ -92,18 +92,18 @@ def hand_to_text():
             file_to_analyze = request.files.getlist('photos-files')[0]
             print(file_to_analyze.filename)
 
-            texts = computer_vision.identify_text_from_local_file_str(file_to_analyze)
+            texts, url = computer_vision.identify_text_from_local_file_str(file_to_analyze)
 
-            return render_template('image_text.html', image=file_to_analyze, texts=texts)
+            return render_template('image_text.html', image=url, texts=texts)
 
         if method == 'url':
             photo_url = request.form['photo-url']
             # print(file_to_analyze.filename)
             print(photo_url)
 
-            texts = computer_vision.identify_text_from_url(photo_url)
+            texts, url = computer_vision.identify_text_from_url(photo_url)
 
-            return render_template('image_text.html', image=photo_url, texts=texts)
+            return render_template('image_text.html', image=url, texts=texts)
 
         return "NU e ok ce e aici"
 

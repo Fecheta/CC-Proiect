@@ -31,9 +31,11 @@
 <div class="main-area">
     <img src="{{ image }}" style="margin: 1em 0; width: 100%;"/>
 </div>
-{% for i in texts %}
-    <h2> {{ i }} </h2>
-{% endfor %}
+<div style="margin-bottom: 20em">
+    {% for i in texts %}
+        <h2> {{ i }} </h2>
+    {% endfor %}
+</div>
 
 </body>
 </html>
