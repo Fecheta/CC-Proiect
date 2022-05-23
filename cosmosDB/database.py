@@ -84,6 +84,16 @@ class DBConnection(object):
         print(items)
         return items
 
+    def select_documents_by_id(self, id):
+        query = "SELECT * FROM c WHERE c.user_id='{0}'".format(id)
+
+        items = list(self.container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        ))
+        print(items)
+        return items
+
     def get_RU(self):
         request_charge = self.container.client_connection.last_response_headers['x-ms-request-charge']
         print('Operation consumed {0} request units'.format(request_charge))

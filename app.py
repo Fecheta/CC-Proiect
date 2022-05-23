@@ -1,3 +1,4 @@
+import json
 import random
 
 from flask import Flask, render_template, request, redirect, session, url_for
@@ -7,7 +8,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 # from auth.utils import _save_cache, _build_msal_app, _build_auth_code_flow, _get_token_from_cache, _load_cache
 from flask_session import Session
 import requests
-
 from FormRecognizer import FormRecognizer
 from cosmosDB.database import DBConnection
 from database.query import Query
@@ -271,8 +271,34 @@ def db():
     # db.insert_user('22', 'virgilfecheta@gmail.com', 'virgil', '11111')
     return render_template('db.html', result=result)
 
+def Convert(a):
+    it = iter(a)
+    res_dct = dict(zip(it, it))
+    return res_dct
+
+@app.route('/documents')
+def documents():
+
+    if session.get("user"):
+        db = DBConnection("Documents")
+        user = session['user']
+        user_id = user.get('preferred_username')
+        print(user_id)
+        documents = db.select_documents_by_id("virgilfecheta@gmail.com")
+        documents2 = json.dumps(documents)
+        return render_template('documents.html', documents=documents2)
+    else:
+        return render_template('index.html', logged=False, user=None)
+
+@app.route('/documents/<value>')
+def documentview(value):
+    db = DBConnection("Documents")
+    img= db.select_document(value)
+    img_url = img[0]["image_url"]
+    return render_template('documentsview.html', img_url=img_url)
+
 
 app.jinja_env.globals.update(_build_auth_code_flow=_build_auth_code_flow)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=80)
+    app.run(debug=True, host='localhost', port=80)
