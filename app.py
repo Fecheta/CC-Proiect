@@ -225,6 +225,17 @@ def hand_to_text():
 
             return render_template('image_text.html', image=url, texts=texts)
 
+        if method == 'test':
+            file = request.files.getlist('photos-files')[0]
+            # print(file_to_analyze.filename)
+            print(file)
+
+            storage = Storage('images-analyzed')
+            storage.upload_file(file)
+            url = storage.get_image_by_name(file.filename)
+
+            return render_template('image_text.html', image=url, texts=['pdf'])
+
         return "NU e ok ce e aici"
 
 

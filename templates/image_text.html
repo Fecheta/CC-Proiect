@@ -29,7 +29,11 @@
 
 <h1> <b>IMAGES</b> </h1>
 <div class="main-area">
+    {% if texts[0] == "pdf" %}
+        <a href="{{ image }}"> Download Pdf </a>
+    {% else %}
     <img src="{{ image }}" style="margin: 1em 0; width: 100%;"/>
+    {% endif %}
 </div>
 <div style="margin-bottom: 20em">
     {% for i in texts %}
