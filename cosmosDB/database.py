@@ -7,7 +7,7 @@ class DBConnection(object):
         self.endpoint = "https://cloudproiect.documents.azure.com:443/"
         self.key = 'uKKz1Ik9lEBtWOMqvSnbwxXfEDQOj5zJjQA4Ynl6w1hiV8jjx7Hzn613lKQsNhL8GlEBVaqLUHKhUqOYVLa3BQ=='
         self.client = CosmosClient(self.endpoint, self.key)
-        if type== "Users":
+        if type == "Users":
             self.database_name = 'Users'
         else:
             self.database_name = 'Documents'
@@ -22,7 +22,7 @@ class DBConnection(object):
             offer_throughput=400
         )
 
-    def insert_user(self,id, email, username, password):
+    def insert_user(self, id, email, username, password):
         self.container.upsert_item({
             'id': '{0}'.format(id),
             'email': '{0}'.format(email),
@@ -40,8 +40,31 @@ class DBConnection(object):
             'language': '{0}'.format(language)
         }
         )
+
     def select_user(self, id):
         query = "SELECT * FROM c WHERE c.id='{0}'".format(id)
+
+        items = list(self.container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        ))
+        print(items)
+        return items
+
+    def select_all(self):
+        query = "SELECT * FROM c"
+
+        items = list(self.container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        ))
+        # print(items)
+        for i in items:
+            print(i)
+        return items
+
+    def select_user_by_email(self, email):
+        query = "SELECT * FROM c WHERE c.email='{0}'".format(email)
 
         items = list(self.container.query_items(
             query=query,
