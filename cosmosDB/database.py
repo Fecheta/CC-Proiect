@@ -32,6 +32,10 @@ class DBConnection(object):
         )
 
     def insert_document(self, id, user_id, image_url, pdf_url, language, type):
+
+        if len(self.select_user_by_url(image_url)) != 0:
+            return
+
         self.container.upsert_item({
             'id': '{0}'.format(id),
             'user_id': '{0}'.format(user_id),
@@ -67,6 +71,15 @@ class DBConnection(object):
     def select_user_by_email(self, email):
         query = "SELECT * FROM c WHERE c.email='{0}'".format(email)
 
+        items = list(self.container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        ))
+        print(items)
+        return items
+
+    def select_user_by_url(self, url):
+        query = "SELECT * FROM c WHERE c.url='{0}'".format(url)
         items = list(self.container.query_items(
             query=query,
             enable_cross_partition_query=True

@@ -1,4 +1,5 @@
 import random
+import uuid
 
 from flask import Flask, render_template, request, redirect, session, url_for
 import msal
@@ -11,6 +12,7 @@ import requests
 from FormRecognizer import FormRecognizer
 from cosmosDB.database import DBConnection
 from database.query import Query
+from speech.text_to_speech import TextToSpeech
 from storage import Storage
 from computer_vision import ComputerVision
 from TextAnalytics import TextAnalytics
@@ -197,6 +199,8 @@ def upload_photos():
 def hand_to_text():
     if not session.get('user'):
         return redirect(url_for('login'))
+    else:
+        user = session['user']
 
     if request.method == 'GET':
         return render_template('image_form.html')
@@ -210,9 +214,19 @@ def hand_to_text():
 
         if method == 'file':
             file_to_analyze = request.files.getlist('photos-files')[0]
-            print(file_to_analyze.filename)
+            # print(file_to_analyze.filename)
 
             texts, url = computer_vision.identify_text_from_local_file_str(file_to_analyze, language)
+
+            db = DBConnection("Documents")
+            db.insert_document(
+                uuid.uuid4(),
+                user.get('preferred_username'),
+                url,
+                None,
+                'English',
+                'handwritten'
+            )
 
             return render_template('image_text.html', image=url, texts=texts)
 
@@ -222,6 +236,16 @@ def hand_to_text():
             print(photo_url)
 
             texts, url = computer_vision.identify_text_from_url(photo_url, language)
+
+            db = DBConnection("Documents")
+            db.insert_document(
+                uuid.uuid4(),
+                user.get('preferred_username'),
+                url,
+                None,
+                'English',
+                'handwritten'
+            )
 
             return render_template('image_text.html', image=url, texts=texts)
 
@@ -239,24 +263,36 @@ def hand_to_text():
         return "NU e ok ce e aici"
 
 
-@app.route('/translate/<value>')
-def translate(value):
-    trs = Translate()
-    response = trs.translate(value)
-    print(response[0])
-    return render_template('translate.html', result=response[0])
+@app.route('/translate', methods=['GET', 'POST'])
+def translate():
+    if request.method == "GET":
+        return render_template('translate.html')
+    if request.method == "POST":
+        text = request.form["text"]
+        to_language = request.form["select"]
+        translation = Translate()
+        result = translation.translate(text, toLanguage=to_language)
+        return render_template('translate.html', result=result)
+    return render_template('translate.html')
 
 
 @app.route('/texttospeech', methods=("GET", "POST"))
 def text_to_speech_page():
-    form = text_to_speech.Widgets()
     if request.method == "GET":
-        return render_template('speech.html', form=form)
+        return render_template('speech.html')
     if request.method == "POST":
         text = request.form["text"]
-        text_to_speech.text_to_speach(text)
-        return render_template('speech.html', form=form)
-    return render_template('speech.html', form=form)
+        textts = TextToSpeech()
+        textts.tts(text)
+        return redirect('/tts_result')
+    return render_template('speech.html')
+
+
+@app.route('/tts_result', methods=["GET"])
+def get_speech():
+    if request.method == "GET":
+        return render_template('speech_result.html')
+    return render_template('speech_result.html')
 
 
 @app.route('/search')
