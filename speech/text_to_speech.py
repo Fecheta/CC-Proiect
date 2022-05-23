@@ -2,35 +2,53 @@ import azure.cognitiveservices.speech as speechsdk
 from wtforms import StringField, RadioField, SelectField, TextAreaField, DateTimeField, SubmitField
 from wtforms.validators import DataRequired
 from flask_wtf import FlaskForm
+from translate.translate import Translate
+import requests
 
 
-def text_to_speach(message):
-    speech_config = speechsdk.SpeechConfig(subscription="57bb276f27cb46d09c3e6b7256bf86fe", region="westeurope")
-    audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
+class TextToSpeech:
+    def __init__(self):
+        self.key = '636a7aca815f4814833e561fd4da33f2'
+        # self.key = self.get_key()
+        self.location = "northeurope"
+        self.endpoint = "https://northeurope.tts.speech.microsoft.com/cognitiveservices/v1"
 
-    # The language of the voice that speaks.
-    speech_config.speech_synthesis_voice_name = 'en-US-JennyNeural'
+    def tts(self, text):
+        params = {
+            'api-version': '3.0',
+        }
 
-    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
+        headers = {
+            'Ocp-Apim-Subscription-Key': self.key,
+            'Ocp-Apim-Subscription-Region': self.location,
+            'Content-type': 'application/ssml+xml',
+            'X-Microsoft-OutputFormat': 'audio-24khz-96kbitrate-mono-mp3',
+            'User_Agent': 'Documents Assistant'
+        }
 
-    # Get text from the console and synthesize to the default speaker.
-    # print("Enter some text that you want to speak >")
-    text = message
+        detector = Translate()
+        detected_language = detector.detect(text)
 
-    speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
+        voice = f"voice xml:lang='en-US' xml:gender='Male' name='en-US-ChristopherNeural'"
 
-    if speech_synthesis_result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
-        print("Speech synthesized for text [{}]".format(text))
-    elif speech_synthesis_result.reason == speechsdk.ResultReason.Canceled:
-        cancellation_details = speech_synthesis_result.cancellation_details
-        print("Speech synthesis canceled: {}".format(cancellation_details.reason))
-        if cancellation_details.reason == speechsdk.CancellationReason.Error:
-            if cancellation_details.error_details:
-                print("Error details: {}".format(cancellation_details.error_details))
-                print("Did you set the speech resource key and region values?")
+        if detected_language == 'ro':
+            voice = f"voice xml:lang='ro-RO' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice (ro-RO, AlinaNeural)'"
+        elif detected_language == 'de':
+            voice = f"voice xml:lang='de-DE' xml:gender='Male' name='Microsoft Server Speech Text to Speech Voice (de-DE, ConradNeural)'"
+        elif detected_language == 'es':
+            voice = f"voice xml:lang='es-ES' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice (es-ES, ElviraNeural)'"
+        elif detected_language == 'it':
+            voice = f"voice xml:lang='it-IT' xml:gender='Male' name='Microsoft Server Speech Text to Speech Voice (it-IT, DiegoNeural)'"
+        elif detected_language == 'fr':
+            voice = f"voice xml:lang='fr-BE' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice (fr-BE, CharlineNeural)'"
+
+        # You can pass more than one object in body.
+        body = f"<speak version='1.0' xml:lang='en-US'><{voice}> {text} </voice></speak>"
+        request = requests.post(self.endpoint, params=params, headers=headers, data=body)
+        f = open("static/speech.mp3", "wb")
+        f.write(request.content)
+        f.close()
+
+        return True
 
 
-class Widgets(FlaskForm):
-    text = StringField(label="Text", validators=[DataRequired()])
-
-    submit = SubmitField(label="Submit")
