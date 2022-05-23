@@ -31,13 +31,14 @@ class DBConnection(object):
         }
         )
 
-    def insert_document(self, id, user_id, image_url, pdf_url, language):
+    def insert_document(self, id, user_id, image_url, pdf_url, language, type):
         self.container.upsert_item({
             'id': '{0}'.format(id),
             'user_id': '{0}'.format(user_id),
             'image_url': '{0}'.format(image_url),
             'pdf_rl': '{0}'.format(pdf_url),
-            'language': '{0}'.format(language)
+            'language': '{0}'.format(language),
+            'type': '{0}'.format(type)
         }
         )
 
