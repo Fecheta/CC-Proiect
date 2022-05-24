@@ -1,4 +1,4 @@
-from azure.cosmos import exceptions, CosmosClient, PartitionKey
+from azure.cosmos import exceptions, CosmosClient, PartitionKey, ContainerProxy
 
 
 class DBConnection(object):
@@ -16,7 +16,7 @@ class DBConnection(object):
             self.container_name = 'Users'
         else:
             self.container_name = 'Documents'
-        self.container = self.database.create_container_if_not_exists(
+        self.container: ContainerProxy  = self.database.create_container_if_not_exists(
             id=self.container_name,
             partition_key=PartitionKey(path="/id"),
             offer_throughput=400
@@ -45,6 +45,16 @@ class DBConnection(object):
             'type': '{0}'.format(type)
         }
         )
+
+    def delete_all_by_user_id(self):
+        all = self.select_all()
+
+        for doc in all:
+            if doc['user_id'] == 'virgilfecheta@gmail.com':
+                self.container.delete_item(
+                    doc["user_id"],
+                    "user_id"
+                )
 
     def select_user(self, id):
         query = "SELECT * FROM c WHERE c.id='{0}'".format(id)

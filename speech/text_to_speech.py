@@ -49,7 +49,7 @@ class TextToSpeech:
 
         # You can pass more than one object in body.
         body = f"<speak version='1.0' xml:lang='en-US'><{voice}> {text} </voice></speak>"
-        request = requests.post(self.endpoint, params=params, headers=headers, data=body)
+        request = requests.post(self.endpoint, params=params, headers=headers, data=body.encode('utf-8'))
         f = open("static/speech.mp3", "wb")
         f.write(request.content)
         f.close()

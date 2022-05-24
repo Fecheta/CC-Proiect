@@ -1,35 +1,81 @@
-<html>
-	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	</head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test01</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <style>
+        body h1{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 1em;
+        }
 
-	<body>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
 
-        <form class="grid" action="/formRecognizer/result" method="POST">
+    </style>
+</head>
 
-          {% if description %}
-            {% for message in description %}
-                <h2 class="c">{{ message }}</h2>
-            {% endfor %}
-          {% endif %}
+<body>
 
-          <label for="description">Form link:</label>
-          <input type="text" id="description" name="description">
+{% if description %}
+    <div style="display: flex; align-items: center; flex-direction: row; justify-content: center; margin: 2.5em 0; width: 50%; border-bottom: 3px solid lightgray;">
+        <h1 style="margin: 0px 2em 0 0; padding: 0px;">PDF was Generated</h1>
+        <a href="{{ url }}"><input type="button" class="btn btn-primary" style="margin: 1em 0" value="Download"></a>
+    </div>
 
-          <center><input class="file_submit" type="Submit"></center>
+    <audio controls src="{{ url_audio }}" style="margin: 1em 0;"></audio>
+
+    <div style="border: 2px solid lightgray; width: 50%; border-radius: 10px; padding: 1em; margin 5em 0">
+        {% for message in description %}
+        {% for str in message %}
+        <h2 class="c" style="">{{ str }}</h2>
+        {% endfor %}
+        {% endfor %}
+    </div>
+
+{% else %}
+
+<div class="card" style="margin: 1em 0; padding: 1em 0 0 0; align-items: center; width: 30%">
+
+    <div class="form-group" style="width: 100%; display: flex; justify-content: center; flex-direction: column; padding: 1em">
+
+        <h3 style="margin-bottom: 2em; text-align: center; margin: 1em 0">Upload</h3>
+
+        <form class="grid" action="/formRecognizer" method="POST">
+
+            <div style="display: flex; flex-direction: column; justify-content:space-between;">
+    <!--            <label for="description">Form link:</label>-->
+                <input type="text" id="description" name="description" placeholder="enter url here" style="margin: 1em 0">
+    <!--            <label for="name">Form pdf name:</label>-->
+                <input type="text" id="name" name="name" placeholder="give a name" style="margin: 1em 0">
+
+                <div style="display: flex; flex-direction: row; justify-content:space-between;">
+                    <label for="doc_type">Form pdf name:</label>
+                    <select name="doc type" id="doc_type" style="width:50%">
+                        <option value="table">table</option>
+                        <option value="receipt">receipt</option>
+                        <option value="invoice">invoice</option>
+                    </select>
+                </div>
+
+                <input type="Submit" class="btn btn-primary" style="margin: 1em 0">
+            </div>
 
         </form>
 
+    </div>
 
+</div>
 
+{% endif %}
 
-
-
-        <br>
-        <br>
-        <br>
-
-
-    </body>
-
+</body>
 </html>

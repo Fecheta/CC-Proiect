@@ -1,3 +1,4 @@
+import io
 import json
 import random
 import uuid
@@ -7,6 +8,7 @@ import msal
 import app_config
 from werkzeug.middleware.proxy_fix import ProxyFix
 # from auth.utils import _save_cache, _build_msal_app, _build_auth_code_flow, _get_token_from_cache, _load_cache
+from PdfCreator import pdfconv
 from flask_session import Session
 import requests
 from FormRecognizer import FormRecognizer
@@ -150,19 +152,62 @@ def text_analytics_results():
     return render_template('textAnalytics.html', description=results)
 
 
-@app.route('/formRecognizer')
-def form_recognizer():
-    return render_template('form.html')
+# @app.route('/formRecognizer')
+# def form_recognizer():
+#     return render_template('form.html')
 
 
-@app.route('/formRecognizer/result', methods=['POST', 'GET'])
+@app.route('/formRecognizer', methods=['POST', 'GET'])
 def form_recognizer_results():
-    output = request.form.to_dict()
-    description = output["description"]
-    print(description)
-    results = FormRecognizer.get_information(description)
-    print(results)
-    return render_template('form.html', description=results)
+    if not session.get('user'):
+        return redirect(url_for('login'))
+    else:
+        user = session['user']
+
+    if request.method == 'GET':
+        return render_template('form.html')
+
+    if request.method == 'POST':
+        output = request.form.to_dict()
+        description = output["description"]
+        doc_type = output["doc type"]
+        name = output["name"] + ".pdf"
+        if doc_type == "table":
+            results = FormRecognizer.get_information_from_table(description)
+        elif doc_type == "receipt":
+            results = FormRecognizer.get_information_from_receipt(description)
+        else:
+            results = FormRecognizer.get_information_from_invoice(description)
+        pdf = pdfconv.create_pdf(results)
+        temp = pdf.output(dest='S')
+        storage = Storage.storage("pdf")
+        # print(temp)
+        storage.upload_file_stream(io.BytesIO(temp), name)
+        url = storage.get_image_by_name(name)
+        # print(results)
+
+        db = DBConnection("Documents")
+        db.insert_document(
+            uuid.uuid4(),
+            user.get('preferred_username'),
+            description,
+            url,
+            'English',
+            'form recognizer'
+        )
+
+        text = ''
+        for i in results:
+            for j in i:
+                text += j
+
+        tts = TextToSpeech()
+        name = tts.tts(text)
+        st = Storage.storage('audio')
+        st.change_container('audio')
+        url_audio = st.get_image_by_name(name)
+
+        return render_template('form.html', description=results, url=url, url_audio=url_audio)
 
 
 @app.route('/<int:count>')
@@ -365,6 +410,7 @@ def search_page():
 @app.route('/db')
 def db():
     db = DBConnection("Documents")  # connect to Users / Documents database with this param
+    # db.delete_all_by_user_id()
     result = db.select_all()
     # db.insert_user('22', 'virgilfecheta@gmail.com', 'virgil', '11111')
     return render_template('db.html', result=result)
@@ -373,6 +419,7 @@ def Convert(a):
     it = iter(a)
     res_dct = dict(zip(it, it))
     return res_dct
+
 
 @app.route('/documents')
 def documents():
@@ -387,6 +434,7 @@ def documents():
         return render_template('documents.html', documents=documents2)
     else:
         return render_template('index.html', logged=False, user=None)
+
 
 @app.route('/documents/<value>')
 def documentview(value):
