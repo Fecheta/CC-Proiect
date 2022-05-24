@@ -49,6 +49,13 @@ for (let i of data) {
   type.innerHTML = i["type"];
   list.appendChild(type);
 
+  var newItem = document.createElement("li");
+  let link = document.createElement("a");
+  link.innerHTML=i["image_url"];
+  link.href = i["image_url"];
+  newItem.appendChild(link);
+  list.appendChild(newItem)
+
   let img = document.createElement("img");
   img.src = i["image_url"];
   list.appendChild(img);
