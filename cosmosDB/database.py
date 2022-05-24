@@ -117,6 +117,11 @@ class DBConnection(object):
         print(items)
         return items
 
+    def delete_document_by_id(self, id):
+        for item in self.container.query_items(query="SELECT * FROM c WHERE c.id ='{0}'".format(id),
+                                          enable_cross_partition_query=True):
+            self.container.delete_item(item, partition_key=item["id"])
+
     def get_RU(self):
         request_charge = self.container.client_connection.last_response_headers['x-ms-request-charge']
         print('Operation consumed {0} request units'.format(request_charge))
