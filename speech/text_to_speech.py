@@ -1,7 +1,12 @@
+import io
+import uuid
+
 import azure.cognitiveservices.speech as speechsdk
 from wtforms import StringField, RadioField, SelectField, TextAreaField, DateTimeField, SubmitField
 from wtforms.validators import DataRequired
 from flask_wtf import FlaskForm
+
+from storage import Storage
 from translate.translate import Translate
 import requests
 
@@ -49,6 +54,11 @@ class TextToSpeech:
         f.write(request.content)
         f.close()
 
-        return True
+        storage = Storage.storage('audio')
+        storage.change_container('audio')
+        name = 'audio' + str(uuid.uuid1()) + '.mp3'
+        storage.upload_file_stream(io.BytesIO(request.content), name)
+
+        return name
 
 

@@ -23,11 +23,23 @@
             padding: 0px;
             margin: 0px;
         }
+
+        .text-audio{
+            border: 2px solid lightgray;
+            border-radius: 10px;
+            width: 30%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin: 2em 0;
+            padding: 1em;
+        }
     </style>
 </head>
 <body>
 
-<h1> <b>IMAGES</b> </h1>
+<h1> <b>IMAGE</b> </h1>
 <div class="main-area">
     {% if texts[0] == "pdf" %}
         <a href="{{ image }}"> Download Pdf </a>
@@ -35,11 +47,30 @@
     <img src="{{ image }}" style="margin: 1em 0; width: 100%;"/>
     {% endif %}
 </div>
-<div style="margin-bottom: 20em">
-    {% for i in texts %}
-        <h2> {{ i }} </h2>
-    {% endfor %}
+
+<div class="text-audio">
+    <div>
+        <h1 style="border-bottom: 2px solid lightgray"> Source language: {{ language }} </h1>
+        <audio controls src="{{ audio_url }}" style="margin: 1em 0;"></audio>
+    </div>
+    <div style="width: 100%;">
+        {% for text in texts %}
+        <h2> {{ text }} </h2>
+        {% endfor %}
+    </div>
 </div>
+
+{% if trans_language %}
+<div class="text-audio">
+    <div>
+        <h1 style="border-bottom: 2px solid lightgray" > Translated language: {{ trans_language }} </h1>
+        <audio controls src="{{ trans_audio_url }}" style="margin: 1em 0;"></audio>
+    </div>
+    <div style="width: 100%;">
+        <h2> {{ translated_txt }} </h2>
+    </div>
+</div>
+{% endif %}
 
 </body>
 </html>

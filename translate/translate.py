@@ -37,7 +37,7 @@ class Translate:
         response = request.json()
         print(response)
 
-        return response
+        return response[0]['translations'][0]['text']
 
     def detect(self, text):
         params = {

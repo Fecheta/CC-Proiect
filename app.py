@@ -209,14 +209,18 @@ def hand_to_text():
         computer_vision = ComputerVision()
 
         method = request.form['source']
-        language = request.form['lang']
+        source_language = request.form['lang']
+        trans_language = request.form['lang-trans']
+        if trans_language == '':
+            trans_language = None
+        print('Trans lg: ' + str(trans_language))
         # print("Method: " + str(method))
 
         if method == 'file':
             file_to_analyze = request.files.getlist('photos-files')[0]
             # print(file_to_analyze.filename)
 
-            texts, url = computer_vision.identify_text_from_local_file_str(file_to_analyze, language)
+            texts, url = computer_vision.identify_text_from_local_file_str(file_to_analyze, source_language)
 
             db = DBConnection("Documents")
             db.insert_document(
@@ -228,14 +232,43 @@ def hand_to_text():
                 'handwritten'
             )
 
-            return render_template('image_text.html', image=url, texts=texts)
+            t = ''
+            for i in texts:
+                t += i
+
+            tts = TextToSpeech()
+            name = tts.tts(t)
+            st = Storage.storage('audio')
+            url_audio = st.get_image_by_name(name)
+
+            translated_text = ''
+            trans_audio_url = ''
+
+            if trans_language:
+                trans = Translate()
+                tr_tts = TextToSpeech()
+                tr_st = Storage.storage('audio')
+
+                translated_text = trans.translate(t, trans_language)
+                print("Translated text" + str(translated_text))
+                tr_name = tr_tts.tts(translated_text)
+                trans_audio_url = tr_st.get_image_by_name(tr_name)
+
+            return render_template('image_text.html',
+                                   image=url,
+                                   texts=texts,
+                                   audio_url=url_audio,
+                                   language=source_language,
+                                   trans_language=trans_language,
+                                   translated_txt=translated_text,
+                                   trans_audio_url=trans_audio_url)
 
         if method == 'url':
             photo_url = request.form['photo-url']
             # print(file_to_analyze.filename)
             print(photo_url)
 
-            texts, url = computer_vision.identify_text_from_url(photo_url, language)
+            texts, url = computer_vision.identify_text_from_url(photo_url, source_language)
 
             db = DBConnection("Documents")
             db.insert_document(
@@ -247,7 +280,36 @@ def hand_to_text():
                 'handwritten'
             )
 
-            return render_template('image_text.html', image=url, texts=texts)
+            t = ''
+            for i in texts:
+                t += i
+
+            tts = TextToSpeech()
+            name = tts.tts(t)
+            st = Storage.storage('audio')
+            url_audio = st.get_image_by_name(name)
+
+            translated_text = ''
+            trans_audio_url = ''
+
+            if trans_language:
+                trans = Translate()
+                tr_tts = TextToSpeech()
+                tr_st = Storage.storage('audio')
+
+                translated_text = trans.translate(t, trans_language)
+                print("Translated text" + str(translated_text))
+                tr_name = tr_tts.tts(translated_text)
+                trans_audio_url = tr_st.get_image_by_name(tr_name)
+
+            return render_template('image_text.html',
+                                   image=url,
+                                   texts=texts,
+                                   audio_url=url_audio,
+                                   language=source_language,
+                                   trans_language=trans_language,
+                                   translated_txt=translated_text,
+                                   trans_audio_url=trans_audio_url)
 
         if method == 'test':
             file = request.files.getlist('photos-files')[0]
